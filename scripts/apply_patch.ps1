@@ -9,31 +9,45 @@ $ErrorActionPreference = "Stop"
 $ScriptDir   = Split-Path -Parent $MyInvocation.MyCommand.Path
 $ProjectRoot = Split-Path -Parent $ScriptDir
 
-# Support standalone folder or project repo layout
-if (Test-Path (Join-Path $ProjectRoot "src\LogiSmoothScroll.cs")) {
-    $CsPath  = Join-Path $ProjectRoot "src\LogiSmoothScroll.cs"
-    $BinDir  = Join-Path $ProjectRoot "bin"
-} elseif (Test-Path (Join-Path $ScriptDir "LogiSmoothScroll.cs")) {
-    $CsPath  = Join-Path $ScriptDir "LogiSmoothScroll.cs"
-    $BinDir  = $ScriptDir
+# 1. Determine ExePath (Prefer existing pre-compiled binary in script dir, or bin folder)
+if (Test-Path (Join-Path $ScriptDir "LogiSmoothScroll.exe")) {
+    $ExePath = Join-Path $ScriptDir "LogiSmoothScroll.exe"
+} elseif (Test-Path (Join-Path $ProjectRoot "bin\LogiSmoothScroll.exe")) {
+    $ExePath = Join-Path $ProjectRoot "bin\LogiSmoothScroll.exe"
 } else {
-    $CsPath  = Join-Path $ProjectRoot "LogiSmoothScroll.cs"
-    $BinDir  = $ProjectRoot
+    $BinDir = Join-Path $ProjectRoot "bin"
+    if (-not (Test-Path $BinDir)) { New-Item -ItemType Directory -Path $BinDir -Force | Out-Null }
+    $ExePath = Join-Path $BinDir "LogiSmoothScroll.exe"
 }
 
-if (-not (Test-Path $BinDir)) {
-    New-Item -ItemType Directory -Path $BinDir -Force | Out-Null
+# 2. Determine CsPath if compilation is ever needed
+if (Test-Path (Join-Path $ScriptDir "LogiSmoothScroll.cs")) {
+    $CsPath = Join-Path $ScriptDir "LogiSmoothScroll.cs"
+} elseif (Test-Path (Join-Path $ProjectRoot "src\LogiSmoothScroll.cs")) {
+    $CsPath = Join-Path $ProjectRoot "src\LogiSmoothScroll.cs"
+} else {
+    $CsPath = Join-Path $ProjectRoot "LogiSmoothScroll.cs"
 }
 
-$ExePath = Join-Path $BinDir "LogiSmoothScroll.exe"
 $RunKey  = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run"
 $RunName = "LogiSmoothScrollEngine"
 
-function Compile-Daemon {
+function Ensure-Daemon-Ready {
+    if (Test-Path $ExePath) {
+        Write-Host "[1/3] Using pre-compiled LogiSmoothScroll.exe..." -ForegroundColor Green
+        return
+    }
+
+    if (-not (Test-Path $CsPath)) {
+        throw "Neither pre-compiled LogiSmoothScroll.exe nor source LogiSmoothScroll.cs was found in $ScriptDir or $ProjectRoot"
+    }
+
+    Write-Host "[1/3] Compiling LogiSmoothScroll.cs from source..." -ForegroundColor Cyan
     $csc = "C:\Windows\Microsoft.NET\Framework64\v4.0.30319\csc.exe"
     if (-not (Test-Path $csc)) {
         throw "Cannot find .NET Framework 64-bit compiler at $csc"
     }
+
     Get-Process -Name "LogiSmoothScroll" -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
     Start-Sleep -Milliseconds 300
     & $csc /nologo /target:winexe /optimize+ /out:$ExePath $CsPath
@@ -43,10 +57,9 @@ function Compile-Daemon {
 }
 
 if ($Action -eq "global") {
-    Write-Host "[1/3] Compiling In-Memory RAM Patcher Daemon..." -ForegroundColor Cyan
-    Compile-Daemon
+    Ensure-Daemon-Ready
 
-    Write-Host "[2/3] Patching running logioptionsplus_agent.exe in RAM (preserving disk Authenticode signature)..." -ForegroundColor Cyan
+    Write-Host "[2/3] Patching running logioptionsplus_agent.exe in RAM..." -ForegroundColor Cyan
     & $ExePath --once
     Invoke-WmiMethod -Class Win32_Process -Name Create -ArgumentList "`"$ExePath`"" | Out-Null
 
