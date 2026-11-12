@@ -47,7 +47,7 @@ Running unknown `.exe` files on Windows requires caution. This project is built 
 ## Technical Engineering Report
 
 For complete reverse engineering analysis and C++ diff proposals for the Logitech engineering team, see:
-- [`docs/Logi_Options_Plus_Smooth_Scrolling_Engineering_Report.md`](docs/Logi_Options_Plus_Smooth_Scrolling_Engineering_Report.md) ([繁體中文](docs/Logi_Options_Plus_Smooth_Scrolling_Engineering_Report.zh-TW.md) · [简体中文](docs/Logi_Options_Plus_Smooth_Scrolling_Engineering_Report.zh-CN.md) · [日本語](docs/Logi_Options_Plus_Smooth_Scrolling_Engineering_Report.ja.md))
+- [Technical Engineering Report (English)](docs/Logi_Options_Plus_Smooth_Scrolling_Engineering_Report.md) ([繁體中文](docs/Logi_Options_Plus_Smooth_Scrolling_Engineering_Report.zh-TW.md) · [简体中文](docs/Logi_Options_Plus_Smooth_Scrolling_Engineering_Report.zh-CN.md) · [日本語](docs/Logi_Options_Plus_Smooth_Scrolling_Engineering_Report.ja.md))
 
 ---
 

@@ -47,7 +47,7 @@ Windows でサードパーティの `.exe` を実行する際は注意が必要�
 ## 技術レポート（エンジニアリング詳細）
 
 バイナリ逆アセンブル解析、内部データフロー、および Logitech 開発チーム向けの C++ 修正提案の詳細は、以下をご参照ください：
-- [`docs/Logi_Options_Plus_Smooth_Scrolling_Engineering_Report.ja.md`](docs/Logi_Options_Plus_Smooth_Scrolling_Engineering_Report.ja.md) ([English](docs/Logi_Options_Plus_Smooth_Scrolling_Engineering_Report.md) · [繁體中文](docs/Logi_Options_Plus_Smooth_Scrolling_Engineering_Report.zh-TW.md) · [简体中文](docs/Logi_Options_Plus_Smooth_Scrolling_Engineering_Report.zh-CN.md))
+- [技術レポート（日本語）](docs/Logi_Options_Plus_Smooth_Scrolling_Engineering_Report.ja.md)（[English](docs/Logi_Options_Plus_Smooth_Scrolling_Engineering_Report.md) · [繁體中文](docs/Logi_Options_Plus_Smooth_Scrolling_Engineering_Report.zh-TW.md) · [简体中文](docs/Logi_Options_Plus_Smooth_Scrolling_Engineering_Report.zh-CN.md)）
 
 ---
 

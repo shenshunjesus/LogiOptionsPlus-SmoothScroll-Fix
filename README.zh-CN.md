@@ -47,7 +47,7 @@
 ## 深度技术报告
 
 欲了解完整的二进制逆向工程分析以及提供给罗技官方工程团队的 C++ 修复建议，请参阅：
-- [`docs/Logi_Options_Plus_Smooth_Scrolling_Engineering_Report.zh-CN.md`](docs/Logi_Options_Plus_Smooth_Scrolling_Engineering_Report.zh-CN.md) ([English](docs/Logi_Options_Plus_Smooth_Scrolling_Engineering_Report.md) · [繁體中文](docs/Logi_Options_Plus_Smooth_Scrolling_Engineering_Report.zh-TW.md) · [日本語](docs/Logi_Options_Plus_Smooth_Scrolling_Engineering_Report.ja.md))
+- [深度技术报告（简体中文）](docs/Logi_Options_Plus_Smooth_Scrolling_Engineering_Report.zh-CN.md)（[English](docs/Logi_Options_Plus_Smooth_Scrolling_Engineering_Report.md) · [繁體中文](docs/Logi_Options_Plus_Smooth_Scrolling_Engineering_Report.zh-TW.md) · [日本語](docs/Logi_Options_Plus_Smooth_Scrolling_Engineering_Report.ja.md)）
 
 ---
 
