@@ -16,9 +16,9 @@
 ## 快速开始（最简单推荐）
 
 1. 前往 Releases 下载免编译打包文件 **[`LogiOptionsPlus-SmoothScroll-Fix-v1.0.0.zip`](https://github.com/shenshunjesus/LogiOptionsPlus-SmoothScroll-Fix/releases/tag/v1.0.0)** 并解压缩。
-2. **一键启用**：双击运行 **`Install-Fix.bat`**（完成！全局平滑滚动与开机自启动立即生效）。
-3. **一键解除**：如需恢复罗技官方默认状态，双击运行 **`Uninstall-Fix.bat`** 即可干净卸载。
-4. **检查状态**：双击运行 **`Check-Status.bat`** 可随时查看当前驻留状态。
+2. **一键启用**：双击运行 **`Install-Fix.bat`**。
+3. **一键解除**：双击运行 **`Uninstall-Fix.bat`**。
+4. **检查状态**：双击运行 **`Check-Status.bat`**。
 
 > [!IMPORTANT]
 > **完全不需要“以管理员身份运行”！**  
