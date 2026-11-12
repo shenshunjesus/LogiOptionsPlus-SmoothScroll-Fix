@@ -13,40 +13,38 @@
 
 ---
 
-## 核心特色
-
-- **零磁碟修改（不破壞數位簽章）**：完全不修改硬碟上的 `.exe` 二進位檔案，100% 保留 Logitech Authenticode 官方簽章，絕不會觸發 IPC 簽章驗證失敗（避免出現 `Getting resources error` 或滾輪失效）。
-- **無需系統管理員權限**：`logioptionsplus_agent.exe` 本身以一般登入使用者權限執行，修補程式以相同使用者層級呼叫 Win32 記憶體 API，無需 UAC 提權。
-- **開機自動常駐守護**：內建極輕量守護程序，開機自動常駐背景，即使 Logi Options+ 重新啟動或自動更新，也能在 3 秒內自動完成 RAM 記憶體修補。
-
----
-
 ## 快速開始（最簡單推薦）
 
 1. 前往 Releases 下載免編譯打包檔 **[`LogiOptionsPlus-SmoothScroll-Fix-v1.0.0.zip`](https://github.com/shenshunjesus/LogiOptionsPlus-SmoothScroll-Fix/releases/tag/v1.0.0)** 並解壓縮。
-2. **一鍵啟用**：對著 `Install-Fix.bat` 點擊兩下（完成！全域平滑捲動與開機自啟動立即生效）。
-3. **一鍵解除**：如果日後想還原原廠設定，對著 `Uninstall-Fix.bat` 點擊兩下即可乾淨移除。
-4. **檢查狀態**：對著 `Check-Status.bat` 點擊兩下可隨時檢視目前常駐狀況。
+2. **一鍵啟用**：對著 **`Install-Fix.bat`** 點擊兩下（完成！全域平滑捲動與開機自啟動立即生效）。
+3. **一鍵解除**：如果日後想還原原廠預設狀態，對著 **`Uninstall-Fix.bat`** 點擊兩下即可乾淨移除。
+4. **檢查狀態**：對著 **`Check-Status.bat`** 點擊兩下可隨時檢視目前常駐狀況。
+
+> [!IMPORTANT]
+> **完全不需要「以系統管理員身分執行」！**
+> `logioptionsplus_agent.exe` 本身是以一般使用者身分執行，本工具**只需一般使用者權限**即可正常運作。請直接點擊兩下執行，切勿使用管理員權限。
 
 ---
 
-## 進階：透過 PowerShell 原始碼執行
+## 安全性與透明度（為什麼您可以放心執行？）
 
-### 1. 啟用修補程式（全域平滑捲動 + SmartShift 棘輪修復）
-開啟 PowerShell 並執行：
-```powershell
-powershell -ExecutionPolicy Bypass -File ".\scripts\apply_patch.ps1" -Action global
-```
+在 Windows 上執行第三方的 `.exe` 程式確實需要謹慎。本專案採取最嚴格的透明度設計，以確保使用者安全：
 
-### 2. 檢查常駐狀態
-```powershell
-powershell -ExecutionPolicy Bypass -File ".\scripts\apply_patch.ps1" -Action status
-```
-
-### 3. 還原原廠預設狀態
-```powershell
-powershell -ExecutionPolicy Bypass -File ".\scripts\apply_patch.ps1" -Action restore
-```
+1. **絕對不需要系統管理員權限（Non-Elevated）**：
+   - 本程式不需要 UAC 提權，不會修改系統目錄、不會安裝任何虛擬驅動程式、亦不會做任何系統層級的 Hook。
+2. **零網路連線（100% Offline）**：
+   - 原始碼中完全不包含任何 HTTP / Socket 連網代碼，沒有任何遙測（Telemetry）、資料回傳或背景通訊。
+3. **開源可審查（不到 200 行代碼）**：
+   - 核心邏輯僅在 [`src/LogiSmoothScroll.cs`](src/LogiSmoothScroll.cs) 之中，任何人都能在 3 分鐘內逐行審核完畢。
+4. **若您對下載的 `.exe` 有疑慮，可直接從本機原始碼現場編譯**：
+   - 您完全不需要使用 zip 內附的 `.exe`！只要 clone 本專案並在 PowerShell 執行：
+     ```powershell
+     powershell -ExecutionPolicy Bypass -File ".\scripts\apply_patch.ps1" -Action global
+     ```
+   - 腳本會直接呼叫微軟官方內建的 C# 編譯器（`csc.exe`）在您電腦中現場編譯，確保執行檔 100% 來自您審查過的源碼。
+5. **官方二進位檔案雜湊比對（SHA-256）**：
+   - `LogiSmoothScroll.exe` (v1.0.0):
+     `735250A7ED081BC8525C9B4B00DBFA4EA4C621FAF097F5F616BC4CBB7BF9F167`
 
 ---
 

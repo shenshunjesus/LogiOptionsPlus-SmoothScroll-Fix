@@ -2,7 +2,7 @@
 
 # Logitech Options+ (Windows) — Smooth Scrolling Architecture & SmartShift UX Bug Report
 
-[English](Logi_Options_Plus_Smooth_Scrolling_Engineering_Report.md) · [繁體中文](Logi_Options_Plus_Smooth_Scrolling_Engineering_Report.zh-TW.md)
+[English](Logi_Options_Plus_Smooth_Scrolling_Engineering_Report.md) · [繁體中文](Logi_Options_Plus_Smooth_Scrolling_Engineering_Report.zh-TW.md) · [简体中文](Logi_Options_Plus_Smooth_Scrolling_Engineering_Report.zh-CN.md) · [日本語](Logi_Options_Plus_Smooth_Scrolling_Engineering_Report.ja.md)
 
 </div>
 

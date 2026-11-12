@@ -13,47 +13,41 @@
 
 ---
 
-## 核心特色
-
-- **零磁盘修改（不破坏数字签名）**：完全不修改硬盘上的 `.exe` 二进制文件，100% 保留 Logitech Authenticode 官方签名，绝不会触发 IPC 签名校验失败（避免出现 `Getting resources error` 或滚轮失灵）。
-- **无需管理员权限**：`logioptionsplus_agent.exe` 本身以当前登录用户权限运行，修补程序以相同用户层级调用 Win32 内存 API，无需 UAC 提权。
-- **开机自动常驻守护**：内置极轻量守护进程，开机静默常驻后台，即使 Logi Options+ 重启或自动更新，也能在 3 秒内自动完成 RAM 内存修补。
-
----
-
 ## 快速开始（最简单推荐）
 
 1. 前往 Releases 下载免编译打包文件 **[`LogiOptionsPlus-SmoothScroll-Fix-v1.0.0.zip`](https://github.com/shenshunjesus/LogiOptionsPlus-SmoothScroll-Fix/releases/tag/v1.0.0)** 并解压缩。
-2. **一键启用**：双击运行 `Install-Fix.bat`（完成！全局平滑滚动与开机自启动立即生效）。
-3. **一键解除**：如需恢复罗技官方默认状态，双击运行 `Uninstall-Fix.bat` 即可干净卸载。
-4. **检查状态**：双击运行 `Check-Status.bat` 可随时查看当前驻留状态。
+2. **一键启用**：双击运行 **`Install-Fix.bat`**（完成！全局平滑滚动与开机自启动立即生效）。
+3. **一键解除**：如需恢复罗技官方默认状态，双击运行 **`Uninstall-Fix.bat`** 即可干净卸载。
+4. **检查状态**：双击运行 **`Check-Status.bat`** 可随时查看当前驻留状态。
+
+> [!IMPORTANT]
+> **完全不需要“以管理员身份运行”！**  
+> `logioptionsplus_agent.exe` 本身是以普通用户身份运行，本工具**仅需普通用户权限**即可正常运行。请直接双击运行，切勿使用管理员权限。
 
 ---
 
-## 进阶：通过 PowerShell 源码运行
+## 安全性与透明度（为什么您可以放心运行？）
 
-### 1. 启用修补程序（全局平滑滚动 + SmartShift 棘轮修复）
-打开 PowerShell 并运行：
-```powershell
-powershell -ExecutionPolicy Bypass -File ".\scripts\apply_patch.ps1" -Action global
-```
+在 Windows 上运行第三方的 `.exe` 程序确实需要谨慎。本项目采取最严格的透明度设计：
 
-### 2. 检查运行状态
-```powershell
-powershell -ExecutionPolicy Bypass -File ".\scripts\apply_patch.ps1" -Action status
-```
-
-### 3. 还原默认状态
-```powershell
-powershell -ExecutionPolicy Bypass -File ".\scripts\apply_patch.ps1" -Action restore
-```
+1. **无需管理员权限（Non-Elevated）**：不申请 UAC 提权，不修改系统目录，不安装虚拟驱动，不做全局系统 Hook。
+2. **零网络连接（100% Offline）**：源代码中绝无任何 HTTP/Socket 网络连接，无遥测、无数据上报。
+3. **开源可审查（不足 200 行代码）**：核心逻辑位于 [`src/LogiSmoothScroll.cs`](src/LogiSmoothScroll.cs)，任何人均可在 3 分钟内通读审计。
+4. **支持完全自源码现场编译**：若对下载的 `.exe` 有所顾虑，克隆本项目并在 PowerShell 中运行：
+   ```powershell
+   powershell -ExecutionPolicy Bypass -File ".\scripts\apply_patch.ps1" -Action global
+   ```
+   脚本将调用微软系统内置的 C# 编译器（`csc.exe`）在您本地现场编译。
+5. **官方二进制校验码（SHA-256）**：
+   - `LogiSmoothScroll.exe` (v1.0.0):
+     `735250A7ED081BC8525C9B4B00DBFA4EA4C621FAF097F5F616BC4CBB7BF9F167`
 
 ---
 
 ## 深度技术报告
 
 欲了解完整的二进制逆向工程分析以及提供给罗技官方工程团队的 C++ 修复建议，请参阅：
-- [`docs/Logi_Options_Plus_Smooth_Scrolling_Engineering_Report.zh-TW.md`](docs/Logi_Options_Plus_Smooth_Scrolling_Engineering_Report.zh-TW.md)（[English Report](docs/Logi_Options_Plus_Smooth_Scrolling_Engineering_Report.md)）
+- [`docs/Logi_Options_Plus_Smooth_Scrolling_Engineering_Report.zh-CN.md`](docs/Logi_Options_Plus_Smooth_Scrolling_Engineering_Report.zh-CN.md) ([English](docs/Logi_Options_Plus_Smooth_Scrolling_Engineering_Report.md) · [繁體中文](docs/Logi_Options_Plus_Smooth_Scrolling_Engineering_Report.zh-TW.md) · [日本語](docs/Logi_Options_Plus_Smooth_Scrolling_Engineering_Report.ja.md))
 
 ---
 
