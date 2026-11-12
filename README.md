@@ -44,7 +44,7 @@ powershell -ExecutionPolicy Bypass -File ".\scripts\apply_patch.ps1" -Action res
 ## Technical Details
 
 For complete reverse engineering analysis and C++ diff proposals for the Logitech engineering team, see:
-- [`docs/Logi_Options_Plus_Smooth_Scrolling_Engineering_Report.md`](docs/Logi_Options_Plus_Smooth_Scrolling_Engineering_Report.md)
+- [`docs/Logi_Options_Plus_Smooth_Scrolling_Engineering_Report.md`](docs/Logi_Options_Plus_Smooth_Scrolling_Engineering_Report.md) ([繁體中文報告](docs/Logi_Options_Plus_Smooth_Scrolling_Engineering_Report.zh-TW.md))
 
 ---
 

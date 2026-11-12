@@ -44,7 +44,7 @@ powershell -ExecutionPolicy Bypass -File ".\scripts\apply_patch.ps1" -Action res
 ## 深度技術報告
 
 欲了解完整的二進位逆向工程過程、底層架構分析，以及提供給羅技官方工程團隊的 C++ 修復建議，請參閱：
-- [`docs/Logi_Options_Plus_Smooth_Scrolling_Engineering_Report.md`](docs/Logi_Options_Plus_Smooth_Scrolling_Engineering_Report.md)
+- [`docs/Logi_Options_Plus_Smooth_Scrolling_Engineering_Report.zh-TW.md`](docs/Logi_Options_Plus_Smooth_Scrolling_Engineering_Report.zh-TW.md)（[English Report](docs/Logi_Options_Plus_Smooth_Scrolling_Engineering_Report.md)）
 
 ---
 
