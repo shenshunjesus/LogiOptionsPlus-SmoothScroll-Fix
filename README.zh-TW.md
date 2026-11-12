@@ -57,3 +57,8 @@
 
 ## 授權條款
 本專案採用 [MIT License](LICENSE) 授權。
+
+---
+
+## 免責聲明（Disclaimer）
+本專案為社群獨立開發之開源相容性工具，與羅技（Logitech International S.A.）官方無任何關聯、贊助或背書。Logitech、Logi 與 Logi Options+ 為羅技之註冊商標。本工具僅供個人相容性改善與技術研究之用。

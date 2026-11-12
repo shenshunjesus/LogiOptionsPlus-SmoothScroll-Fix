@@ -53,3 +53,8 @@ For complete reverse engineering analysis and C++ diff proposals for the Logitec
 
 ## License
 MIT License
+
+---
+
+## Disclaimer
+This project is an independent community open-source project and is not affiliated with, sponsored, or endorsed by Logitech International S.A. Logitech, Logi, and Logi Options+ are trademarks or registered trademarks of Logitech. This tool is provided for educational and interoperability purposes only.
