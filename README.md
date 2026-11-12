@@ -21,7 +21,16 @@ An in-memory runtime patch for **Logitech Options+ (Windows)** that fixes two lo
 
 ---
 
-## Quick Start
+## Quick Start (Easiest Way)
+
+1. Download the pre-built **[`LogiOptionsPlus-SmoothScroll-Fix-v1.0.0.zip`](https://github.com/shenshunjesus/LogiOptionsPlus-SmoothScroll-Fix/releases/tag/v1.0.0)** from Releases and extract it.
+2. **To Enable**: Double-click `Install-Fix.bat` (Done! It enables global smooth scroll and registers auto-start).
+3. **To Uninstall**: Double-click `Uninstall-Fix.bat` (Restores factory default behavior cleanly).
+4. **To Check Status**: Double-click `Check-Status.bat`.
+
+---
+
+## Alternative: Run via PowerShell Directly
 
 ### 1. Enable Global Fix
 Open PowerShell and run:

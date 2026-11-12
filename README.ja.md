@@ -21,7 +21,16 @@
 
 ---
 
-## クイックスタート
+## クイックスタート（おすすめ・最も簡単）
+
+1. Releases からビルド済みパッケージ **[`LogiOptionsPlus-SmoothScroll-Fix-v1.0.0.zip`](https://github.com/shenshunjesus/LogiOptionsPlus-SmoothScroll-Fix/releases/tag/v1.0.0)** をダウンロードして展開（解凍）します。
+2. **有効化**：`Install-Fix.bat` をダブルクリックします（完了！スムーズスクロールとスタートアップ自動常駐が即座に有効化されます）。
+3. **アンインストール（解除）**：公式デフォルトの動作に戻したい場合は、`Uninstall-Fix.bat` をダブルクリックするだけで完全に復元されます。
+4. **ステータス確認**：`Check-Status.bat` をダブルクリックすると、現在のパッチ適用状態を確認できます。
+
+---
+
+## 開発者向け：PowerShell から直接実行する場合
 
 ### 1. パッチの適用（全アプリ有効化 ＋ SmartShift 修正）
 PowerShell を開き、次のコマンドを実行します：

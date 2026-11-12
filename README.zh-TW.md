@@ -21,7 +21,16 @@
 
 ---
 
-## 快速開始
+## 快速開始（最簡單推薦）
+
+1. 前往 Releases 下載免編譯打包檔 **[`LogiOptionsPlus-SmoothScroll-Fix-v1.0.0.zip`](https://github.com/shenshunjesus/LogiOptionsPlus-SmoothScroll-Fix/releases/tag/v1.0.0)** 並解壓縮。
+2. **一鍵啟用**：對著 `Install-Fix.bat` 點擊兩下（完成！全域平滑捲動與開機自啟動立即生效）。
+3. **一鍵解除**：如果日後想還原原廠設定，對著 `Uninstall-Fix.bat` 點擊兩下即可乾淨移除。
+4. **檢查狀態**：對著 `Check-Status.bat` 點擊兩下可隨時檢視目前常駐狀況。
+
+---
+
+## 進階：透過 PowerShell 原始碼執行
 
 ### 1. 啟用修補程式（全域平滑捲動 + SmartShift 棘輪修復）
 開啟 PowerShell 並執行：
