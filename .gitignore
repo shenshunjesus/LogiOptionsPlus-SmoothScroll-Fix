@@ -1,0 +1,13 @@
+# Binaries & build artifacts
+bin/
+obj/
+*.exe
+*.dll
+*.pdb
+
+# User/Editor files
+.vs/
+.vscode/
+*.user
+*.suo
+Thumbs.db
