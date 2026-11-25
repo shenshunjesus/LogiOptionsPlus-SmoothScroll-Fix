@@ -1,4 +1,4 @@
-<div align="center">
+﻿<div align="center">
 
 # LogiOptionsPlus-SmoothScroll-Fix
 
@@ -15,7 +15,7 @@
 
 ## クイックスタート（おすすめ・最も簡単）
 
-1. Releases からビルド済みパッケージ **[`LogiOptionsPlus-SmoothScroll-Fix-v1.0.0.zip`](https://github.com/shenshunjesus/LogiOptionsPlus-SmoothScroll-Fix/releases/tag/v1.0.0)** をダウンロードして展開（解凍）します。
+1. Releases からビルド済みパッケージ **[`LogiOptionsPlus-SmoothScroll-Fix-v1.1.0.zip`](https://github.com/shenshunjesus/LogiOptionsPlus-SmoothScroll-Fix/releases/tag/v1.1.0)** をダウンロードして展開（解凍）します。
 2. **有効化**：**`Install-Fix.bat`** をダブルクリックします。
 3. **アンインストール**：**`Uninstall-Fix.bat`** をダブルクリックします。
 4. **ステータス確認**：**`Check-Status.bat`** をダブルクリックします。
@@ -39,8 +39,8 @@ Windows でサードパーティの `.exe` を実行する際は注意が必要�
    ```
    Windows 標準搭載の C# コンパイラ（`csc.exe`）によって、お使いの PC 上で直接ビルドされます。
 5. **バイナリ検証ハッシュ（SHA-256）**：
-   - `LogiSmoothScroll.exe` (v1.0.0):
-     `735250A7ED081BC8525C9B4B00DBFA4EA4C621FAF097F5F616BC4CBB7BF9F167`
+   - `LogiSmoothScroll.exe` (v1.1.0):
+     `B7B22FBC7B6B49B80BB7AB797708D51545B7088B7CC919B3F1B8608E61F39F13`
 
 ---
 

@@ -1,4 +1,4 @@
-<div align="center">
+﻿<div align="center">
 
 # Logitech Options+ (Windows) — Smooth Scrolling Architecture & SmartShift UX Bug Report
 
@@ -7,7 +7,7 @@
 </div>
 
 **Target Component**: `logioptionsplus_agent.exe` (`scrolling_helper` & `devio_feature_x2121_gesture`)  
-**Tested Version**: `2.9.1013853` (Depot `888215`) / `2.9.994631` (Depot `881241`)  
+**Tested Version**: `3.0.1024648` / `2.9.1013853` / `2.9.994631` (Depot `881241`)  
 **Hardware Tested**: Logitech MX Master 3S (MagSpeed Electromagnetic Wheel, HID++ 2.0 Feature `0x2121` & `0x2111`)  
 **OS Platform**: Windows 10 / 11 (x64)
 

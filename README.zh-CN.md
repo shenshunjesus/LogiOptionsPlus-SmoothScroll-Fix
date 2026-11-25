@@ -1,4 +1,4 @@
-<div align="center">
+﻿<div align="center">
 
 # LogiOptionsPlus-SmoothScroll-Fix
 
@@ -15,7 +15,7 @@
 
 ## 快速开始（最简单推荐）
 
-1. 前往 Releases 下载免编译打包文件 **[`LogiOptionsPlus-SmoothScroll-Fix-v1.0.0.zip`](https://github.com/shenshunjesus/LogiOptionsPlus-SmoothScroll-Fix/releases/tag/v1.0.0)** 并解压缩。
+1. 前往 Releases 下载免编译打包文件 **[`LogiOptionsPlus-SmoothScroll-Fix-v1.1.0.zip`](https://github.com/shenshunjesus/LogiOptionsPlus-SmoothScroll-Fix/releases/tag/v1.1.0)** 并解压缩。
 2. **一键启用**：双击运行 **`Install-Fix.bat`**。
 3. **一键解除**：双击运行 **`Uninstall-Fix.bat`**。
 4. **检查状态**：双击运行 **`Check-Status.bat`**。
@@ -39,8 +39,8 @@
    ```
    脚本将调用微软系统内置的 C# 编译器（`csc.exe`）在您本地现场编译。
 5. **官方二进制校验码（SHA-256）**：
-   - `LogiSmoothScroll.exe` (v1.0.0):
-     `735250A7ED081BC8525C9B4B00DBFA4EA4C621FAF097F5F616BC4CBB7BF9F167`
+   - `LogiSmoothScroll.exe` (v1.1.0):
+     `B7B22FBC7B6B49B80BB7AB797708D51545B7088B7CC919B3F1B8608E61F39F13`
 
 ---
 

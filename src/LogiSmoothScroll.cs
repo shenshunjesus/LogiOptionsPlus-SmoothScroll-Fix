@@ -13,28 +13,11 @@ namespace LogiSmoothScroll
         private const int PROCESS_QUERY_INFORMATION = 0x0400;
         private const uint PAGE_EXECUTE_READWRITE = 0x40;
 
-        // Patch 1: set_foreground_process_info (RVA 0x18303A0)
-        // Forces foreground whitelist flag [r14+0x28] = 1 for all applications
-        private static readonly byte[] FgUnpatched = new byte[] {
-            0x75, 0x04, 0xB0, 0x01, 0xEB, 0x02, 0x32, 0xC0, 0x41, 0x88, 0x46, 0x28
-        };
-        private static readonly byte[] FgPatched = new byte[] {
-            0x75, 0x04, 0xB0, 0x01, 0xEB, 0x02, 0xB0, 0x01, 0x41, 0x88, 0x46, 0x28
-        };
-        private const int KnownFgRva = 0x18303A0;
-
-        // Patch 2: vertical_scroll (RVA 0x1830510)
-        // Original: 84 D2 74 2D 80 79 28 00 74 27
-        // Patched : 84 D2 74 2D 83 FF 01 90 74 27
-        // When wheel is in physical Ratchet/Rigid mode (edi == 1), jumps to Rigid scroll path (0x1830541).
-        // When wheel is in Free-spin mode (edi != 1), uses SmoothScrollManager.
-        private static readonly byte[] VsUnpatched = new byte[] {
-            0x84, 0xD2, 0x74, 0x2D, 0x80, 0x79, 0x28, 0x00, 0x74, 0x27
-        };
-        private static readonly byte[] VsPatched = new byte[] {
-            0x84, 0xD2, 0x74, 0x2D, 0x83, 0xFF, 0x01, 0x90, 0x74, 0x27
-        };
-        private const int KnownVsRva = 0x1830510;
+        // Cached offsets for the active agent PID so steady-state checks are O(1)
+        private static int _cachedPid = -1;
+        private static int _cachedFgPatchRva = 0;
+        private static int _cachedVsPatchRva = 0;
+        private static byte _cachedFieldOffset = 0x30;
 
         [DllImport("kernel32.dll", SetLastError = true)]
         private static extern IntPtr OpenProcess(int dwDesiredAccess, bool bInheritHandle, int dwProcessId);
@@ -60,79 +43,144 @@ namespace LogiSmoothScroll
         [DllImport("user32.dll")]
         private static extern bool SetForegroundWindow(IntPtr hWnd);
 
-        private static bool MatchAt(byte[] buf, int offset, byte[] pattern)
+        private static bool WriteBytesProtected(IntPtr hProc, IntPtr addr, byte[] data)
         {
-            if (offset + pattern.Length > buf.Length) return false;
-            for (int i = 0; i < pattern.Length; i++)
-            {
-                if (buf[offset + i] != pattern[i]) return false;
-            }
-            return true;
+            uint oldProtect;
+            if (!VirtualProtectEx(hProc, addr, (UIntPtr)data.Length, PAGE_EXECUTE_READWRITE, out oldProtect))
+                return false;
+
+            int written;
+            bool ok = WriteProcessMemory(hProc, addr, data, data.Length, out written) && written == data.Length;
+
+            uint dummy;
+            VirtualProtectEx(hProc, addr, (UIntPtr)data.Length, oldProtect, out dummy);
+            return ok;
         }
 
-        private static bool ApplySinglePatch(
-            IntPtr hProc,
-            IntPtr baseAddr,
-            int moduleSize,
-            int knownRva,
-            byte[] unpatched,
-            byte[] patched,
-            int patchOffset,
-            byte[] writeBytes,
-            bool restore)
+        private static void GetTextSectionBounds(IntPtr hProc, IntPtr baseAddr, int moduleSize, out int textRva, out int textSize)
         {
-            byte[] targetPattern = restore ? patched : unpatched;
-            byte[] alreadyPattern = restore ? unpatched : patched;
+            textRva = 0x1000;
+            textSize = Math.Min(moduleSize - 0x1000, 0x04000000);
 
-            IntPtr matchAddr = IntPtr.Zero;
-            byte[] probe = new byte[unpatched.Length];
-            int bytesRead;
-            IntPtr fastAddr = IntPtr.Add(baseAddr, knownRva);
+            byte[] hdr = new byte[4096];
+            int read;
+            if (!ReadProcessMemory(hProc, baseAddr, hdr, hdr.Length, out read) || read < 512)
+                return;
 
-            if (ReadProcessMemory(hProc, fastAddr, probe, probe.Length, out bytesRead) && bytesRead == probe.Length)
+            int e_lfanew = BitConverter.ToInt32(hdr, 0x3C);
+            if (e_lfanew <= 0 || e_lfanew + 264 >= read)
+                return;
+
+            short numSections = BitConverter.ToInt16(hdr, e_lfanew + 6);
+            short optHdrSize = BitConverter.ToInt16(hdr, e_lfanew + 20);
+            int secOffset = e_lfanew + 24 + optHdrSize;
+
+            for (int i = 0; i < numSections && secOffset + 40 <= read; i++, secOffset += 40)
             {
-                if (MatchAt(probe, 0, alreadyPattern)) return true;
-                if (MatchAt(probe, 0, targetPattern)) matchAddr = fastAddr;
-            }
-
-            if (matchAddr == IntPtr.Zero)
-            {
-                int chunkSize = 1024 * 1024;
-                byte[] chunk = new byte[chunkSize];
-                int scanLimit = Math.Min(moduleSize, 0x03000000);
-                for (int offset = 0x1000; offset < scanLimit; offset += (chunkSize - 32))
+                // Match ".text\0"
+                if (hdr[secOffset] == 0x2E && hdr[secOffset + 1] == 0x74 &&
+                    hdr[secOffset + 2] == 0x65 && hdr[secOffset + 3] == 0x78 &&
+                    hdr[secOffset + 4] == 0x74)
                 {
-                    IntPtr readPtr = IntPtr.Add(baseAddr, offset);
-                    if (ReadProcessMemory(hProc, readPtr, chunk, chunkSize, out bytesRead) && bytesRead > unpatched.Length)
+                    int vsize = BitConverter.ToInt32(hdr, secOffset + 8);
+                    int vaddr = BitConverter.ToInt32(hdr, secOffset + 12);
+                    if (vaddr > 0 && vsize > 0 && vaddr + vsize <= moduleSize)
                     {
-                        for (int i = 0; i <= bytesRead - unpatched.Length; i++)
-                        {
-                            if (MatchAt(chunk, i, targetPattern))
-                            {
-                                matchAddr = IntPtr.Add(readPtr, i);
-                                break;
-                            }
-                            if (MatchAt(chunk, i, alreadyPattern))
-                            {
-                                return true;
-                            }
-                        }
+                        textRva = vaddr;
+                        textSize = vsize;
                     }
-                    if (matchAddr != IntPtr.Zero) break;
+                    return;
                 }
             }
+        }
 
-            if (matchAddr != IntPtr.Zero)
+        // Signature 1: logi::scrolling::scroll_manager::set_foreground_process_info
+        // 48 83 FB 0B 75 17 4C 8B C3 48 8D 15 [disp32] E8 [disp32] 85 C0 75 04 B0 01 EB 02 [32 C0 | B0 01] 41 88 46 [off]
+        // Total length: 35 bytes. Patch target is at +29 (2 bytes). Struct field offset is at +34 (0x28 in v2.9, 0x30 in v3.0+).
+        private static bool MatchFgSignature(byte[] buf, int i)
+        {
+            if (i + 35 > buf.Length) return false;
+            return buf[i] == 0x48 && buf[i + 1] == 0x83 && buf[i + 2] == 0xFB && buf[i + 3] == 0x0B &&
+                   buf[i + 4] == 0x75 && buf[i + 5] == 0x17 &&
+                   buf[i + 6] == 0x4C && buf[i + 7] == 0x8B && buf[i + 8] == 0xC3 &&
+                   buf[i + 9] == 0x48 && buf[i + 10] == 0x8D && buf[i + 11] == 0x15 &&
+                   buf[i + 16] == 0xE8 &&
+                   buf[i + 21] == 0x85 && buf[i + 22] == 0xC0 &&
+                   buf[i + 23] == 0x75 && buf[i + 24] == 0x04 &&
+                   buf[i + 25] == 0xB0 && buf[i + 26] == 0x01 &&
+                   buf[i + 27] == 0xEB && buf[i + 28] == 0x02 &&
+                   ((buf[i + 29] == 0x32 && buf[i + 30] == 0xC0) || (buf[i + 29] == 0xB0 && buf[i + 30] == 0x01)) &&
+                   buf[i + 31] == 0x41 && buf[i + 32] == 0x88 && buf[i + 33] == 0x46;
+        }
+
+        // Signature 2: logi::scrolling::scroll_manager::vertical_scroll
+        // 41 8B F8 48 8B D9 84 D2 74 2D [80 79 <off> 00 | 83 FF 01 90] 74 27 0F 28 C3
+        // Total length: 19 bytes. Patch target is at +10 (4 bytes).
+        private static bool MatchVsSignature(byte[] buf, int i)
+        {
+            if (i + 19 > buf.Length) return false;
+            bool prefixOk = buf[i] == 0x41 && buf[i + 1] == 0x8B && buf[i + 2] == 0xF8 &&
+                            buf[i + 3] == 0x48 && buf[i + 4] == 0x8B && buf[i + 5] == 0xD9 &&
+                            buf[i + 6] == 0x84 && buf[i + 7] == 0xD2 &&
+                            buf[i + 8] == 0x74 && buf[i + 9] == 0x2D;
+            if (!prefixOk) return false;
+
+            bool midOk = (buf[i + 10] == 0x80 && buf[i + 11] == 0x79 && buf[i + 13] == 0x00) ||
+                         (buf[i + 10] == 0x83 && buf[i + 11] == 0xFF && buf[i + 12] == 0x01 && buf[i + 13] == 0x90);
+            if (!midOk) return false;
+
+            return buf[i + 14] == 0x74 && buf[i + 15] == 0x27 &&
+                   buf[i + 16] == 0x0F && buf[i + 17] == 0x28 && buf[i + 18] == 0xC3;
+        }
+
+        private static bool LocateTargets(IntPtr hProc, IntPtr baseAddr, int moduleSize, int pid,
+            out int fgPatchRva, out int vsPatchRva, out byte fieldOffset)
+        {
+            if (pid == _cachedPid && _cachedFgPatchRva != 0 && _cachedVsPatchRva != 0)
             {
-                IntPtr patchAddr = IntPtr.Add(matchAddr, patchOffset);
-                uint oldProtect;
-                if (VirtualProtectEx(hProc, patchAddr, (UIntPtr)writeBytes.Length, PAGE_EXECUTE_READWRITE, out oldProtect))
+                fgPatchRva = _cachedFgPatchRva;
+                vsPatchRva = _cachedVsPatchRva;
+                fieldOffset = _cachedFieldOffset;
+                return true;
+            }
+
+            fgPatchRva = 0;
+            vsPatchRva = 0;
+            fieldOffset = 0x30;
+
+            int textRva, textSize;
+            GetTextSectionBounds(hProc, baseAddr, moduleSize, out textRva, out textSize);
+
+            int chunkSize = 1024 * 1024; // 1 MB chunks
+            byte[] chunk = new byte[chunkSize];
+            int endRva = textRva + textSize;
+
+            for (int rva = textRva; rva < endRva; rva += (chunkSize - 64))
+            {
+                int toRead = Math.Min(chunkSize, endRva - rva);
+                int bytesRead;
+                if (!ReadProcessMemory(hProc, IntPtr.Add(baseAddr, rva), chunk, toRead, out bytesRead) || bytesRead < 40)
+                    continue;
+
+                for (int i = 0; i <= bytesRead - 35; i++)
                 {
-                    int written;
-                    bool ok = WriteProcessMemory(hProc, patchAddr, writeBytes, writeBytes.Length, out written) && written == writeBytes.Length;
-                    uint dummy;
-                    VirtualProtectEx(hProc, patchAddr, (UIntPtr)writeBytes.Length, oldProtect, out dummy);
-                    return ok;
+                    if (fgPatchRva == 0 && MatchFgSignature(chunk, i))
+                    {
+                        fgPatchRva = rva + i + 29;
+                        fieldOffset = chunk[i + 34];
+                    }
+                    if (vsPatchRva == 0 && MatchVsSignature(chunk, i))
+                    {
+                        vsPatchRva = rva + i + 10;
+                    }
+                    if (fgPatchRva != 0 && vsPatchRva != 0)
+                    {
+                        _cachedPid = pid;
+                        _cachedFgPatchRva = fgPatchRva;
+                        _cachedVsPatchRva = vsPatchRva;
+                        _cachedFieldOffset = fieldOffset;
+                        return true;
+                    }
                 }
             }
             return false;
@@ -142,8 +190,6 @@ namespace LogiSmoothScroll
         {
             int count = 0;
             Process[] procs = Process.GetProcessesByName("logioptionsplus_agent");
-            byte[] fgBytes = restore ? new byte[] { 0x32, 0xC0 } : new byte[] { 0xB0, 0x01 };
-            byte[] vsBytes = restore ? new byte[] { 0x80, 0x79, 0x28, 0x00 } : new byte[] { 0x83, 0xFF, 0x01, 0x90 };
 
             foreach (Process p in procs)
             {
@@ -155,8 +201,33 @@ namespace LogiSmoothScroll
                     hProc = OpenProcess(PROCESS_VM_OPERATION | PROCESS_VM_READ | PROCESS_VM_WRITE | PROCESS_QUERY_INFORMATION, false, p.Id);
                     if (hProc == IntPtr.Zero) continue;
 
-                    bool ok1 = ApplySinglePatch(hProc, baseAddr, moduleSize, KnownFgRva, FgUnpatched, FgPatched, 6, fgBytes, restore);
-                    bool ok2 = ApplySinglePatch(hProc, baseAddr, moduleSize, KnownVsRva, VsUnpatched, VsPatched, 4, vsBytes, restore);
+                    int fgPatchRva, vsPatchRva;
+                    byte fieldOffset;
+                    if (!LocateTargets(hProc, baseAddr, moduleSize, p.Id, out fgPatchRva, out vsPatchRva, out fieldOffset))
+                        continue;
+
+                    byte[] fgDesired = restore ? new byte[] { 0x32, 0xC0 } : new byte[] { 0xB0, 0x01 };
+                    byte[] vsDesired = restore
+                        ? new byte[] { 0x80, 0x79, fieldOffset, 0x00 }
+                        : new byte[] { 0x83, 0xFF, 0x01, 0x90 };
+
+                    byte[] curFg = new byte[2];
+                    byte[] curVs = new byte[4];
+                    int r1, r2;
+                    IntPtr fgAddr = IntPtr.Add(baseAddr, fgPatchRva);
+                    IntPtr vsAddr = IntPtr.Add(baseAddr, vsPatchRva);
+
+                    bool ok1 = ReadProcessMemory(hProc, fgAddr, curFg, 2, out r1) && r1 == 2;
+                    bool ok2 = ReadProcessMemory(hProc, vsAddr, curVs, 4, out r2) && r2 == 4;
+
+                    if (ok1 && (curFg[0] != fgDesired[0] || curFg[1] != fgDesired[1]))
+                    {
+                        ok1 = WriteBytesProtected(hProc, fgAddr, fgDesired);
+                    }
+                    if (ok2 && (curVs[0] != vsDesired[0] || curVs[1] != vsDesired[1] || curVs[2] != vsDesired[2] || curVs[3] != vsDesired[3]))
+                    {
+                        ok2 = WriteBytesProtected(hProc, vsAddr, vsDesired);
+                    }
 
                     if (ok1 && ok2) count++;
                 }
@@ -218,17 +289,10 @@ namespace LogiSmoothScroll
                         if (procs.Length > 0)
                         {
                             int pid = procs[0].Id;
-                            if (pid != lastPid)
+                            if (PatchAllProcesses(false) > 0 && pid != lastPid)
                             {
-                                if (PatchAllProcesses(false) > 0)
-                                {
-                                    TriggerForegroundRefresh();
-                                    lastPid = pid;
-                                }
-                            }
-                            else
-                            {
-                                PatchAllProcesses(false);
+                                TriggerForegroundRefresh();
+                                lastPid = pid;
                             }
                         }
                     }

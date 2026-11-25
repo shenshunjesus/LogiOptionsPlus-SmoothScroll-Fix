@@ -1,4 +1,4 @@
-<div align="center">
+﻿<div align="center">
 
 # Logitech Options+ (Windows) — 平滑滚动架构分析与 SmartShift 体验缺陷报告
 
@@ -7,7 +7,7 @@
 </div>
 
 **目标组件**：`logioptionsplus_agent.exe` (`scrolling_helper` 与 `devio_feature_x2121_gesture`)  
-**测试版本**：`2.9.1013853` (Depot `888215`) / `2.9.994631` (Depot `881241`)  
+**测试版本**：`3.0.1024648` / `2.9.1013853` / `2.9.994631` (Depot `881241`)  
 **测试硬件**：Logitech MX Master 3S (MagSpeed 电磁滚轮，HID++ 2.0 Feature `0x2121` 与 `0x2111`)  
 **操作系统**：Windows 10 / 11 (x64)
 

@@ -1,4 +1,4 @@
-<div align="center">
+﻿<div align="center">
 
 # LogiOptionsPlus-SmoothScroll-Fix
 
@@ -15,7 +15,7 @@ An in-memory runtime patch for **Logitech Options+ (Windows)** that fixes two lo
 
 ## Quick Start (Recommended)
 
-1. Download the pre-built **[`LogiOptionsPlus-SmoothScroll-Fix-v1.0.0.zip`](https://github.com/shenshunjesus/LogiOptionsPlus-SmoothScroll-Fix/releases/tag/v1.0.0)** from Releases and extract it.
+1. Download the pre-built **[`LogiOptionsPlus-SmoothScroll-Fix-v1.1.0.zip`](https://github.com/shenshunjesus/LogiOptionsPlus-SmoothScroll-Fix/releases/tag/v1.1.0)** from Releases and extract it.
 2. **To Enable**: Double-click **`Install-Fix.bat`**.
 3. **To Uninstall**: Double-click **`Uninstall-Fix.bat`**.
 4. **To Check Status**: Double-click **`Check-Status.bat`**.
@@ -39,8 +39,8 @@ Running unknown `.exe` files on Windows requires caution. This project is built 
    ```
    The script invokes Microsoft's built-in .NET compiler (`csc.exe`) to compile the executable directly on your machine.
 5. **Binary Checksum Verification (SHA-256)**:
-   - `LogiSmoothScroll.exe` (v1.0.0):
-     `735250A7ED081BC8525C9B4B00DBFA4EA4C621FAF097F5F616BC4CBB7BF9F167`
+   - `LogiSmoothScroll.exe` (v1.1.0):
+     `B7B22FBC7B6B49B80BB7AB797708D51545B7088B7CC919B3F1B8608E61F39F13`
 
 ---
 

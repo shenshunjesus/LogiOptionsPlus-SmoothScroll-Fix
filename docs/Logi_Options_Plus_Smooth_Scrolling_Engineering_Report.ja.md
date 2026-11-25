@@ -1,4 +1,4 @@
-<div align="center">
+﻿<div align="center">
 
 # Logitech Options+ (Windows) — スムーズスクロール構造解析および SmartShift UX 不具合報告書
 
@@ -7,7 +7,7 @@
 </div>
 
 **対象コンポーネント**: `logioptionsplus_agent.exe` (`scrolling_helper` および `devio_feature_x2121_gesture`)  
-**検証バージョン**: `2.9.1013853` (Depot `888215`) / `2.9.994631` (Depot `881241`)  
+**検証バージョン**: `3.0.1024648` / `2.9.1013853` / `2.9.994631` (Depot `881241`)  
 **検証ハードウェア**: Logitech MX Master 3S (MagSpeed 電磁ホイール、HID++ 2.0 Feature `0x2121` & `0x2111`)  
 **検証 OS**: Windows 10 / 11 (x64)
 
